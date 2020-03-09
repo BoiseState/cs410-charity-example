@@ -109,6 +109,7 @@ public class CharityShell {
     }
 
     public static void main(String[] args) throws IOException, SQLException {
+        // First (and only) command line argument: database URL
         String dbUrl = args[0];
         try (Connection cxn = DriverManager.getConnection("jdbc:" + dbUrl)) {
             CharityShell shell = new CharityShell(cxn);
