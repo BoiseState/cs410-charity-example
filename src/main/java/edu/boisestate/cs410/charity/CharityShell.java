@@ -22,15 +22,23 @@ public class CharityShell {
             System.out.format("Funds:%n");
             while (rs.next()) {
                 System.out.format("%d: %s%n",
-                                  rs.getInt("fund_id"),
-                                  rs.getString("fund_name"));
+                                  rs.getInt(1),
+                                  rs.getString(2));
             }
         }
     }
 
     @Command
     public void donor(int id) throws SQLException {
-        String query = "SELECT donor_name, donor_address, donor_city, donor_state, donor_zip FROM donor WHERE donor_id = ?";
+        String query =
+                "SELECT donor_name, donor_address,\n" +
+                        " donor_city, donor_state, donor_zip,\n" +
+                        " SUM(amount) AS total_given\n" +
+                        "FROM donor\n" +
+                        "JOIN gift USING (donor_id)\n" +
+                        "JOIN gift_fund_allocation USING (gift_id)\n" +
+                        "WHERE donor_id = ?\n" +
+                        "GROUP BY donor_id;";
         try (PreparedStatement stmt = db.prepareStatement(query)) {
             stmt.setInt(1, id);
             try (ResultSet rs = stmt.executeQuery()) {
@@ -44,6 +52,8 @@ public class CharityShell {
                                   rs.getString("donor_city"),
                                   rs.getString("donor_state"),
                                   rs.getString("donor_zip"));
+                System.out.format("Total given: %s%n",
+                                  rs.getBigDecimal("total_given"));
             }
         }
     }
