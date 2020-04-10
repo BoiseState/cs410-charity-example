@@ -108,6 +108,39 @@ public class CharityShell {
     }
 
     @Command
+    public void generate() throws SQLException {
+        generate(50);
+    }
+
+    @Command
+    public void generate(int donors) throws SQLException {
+        generate(donors, 10);
+    }
+
+    @Command
+    public void generate(int donors, double gpd) throws SQLException {
+        String cq = "SELECT COUNT(DISTINCT gift_id) AS ngifts, SUM(amount) AS total FROM gift_fund_allocation";
+        db.setAutoCommit(false);
+        try {
+            var gen = new CharityDataGenerator(db, donors, gpd);
+            gen.generate();
+            try (Statement s = db.createStatement();
+                 ResultSet rs = s.executeQuery(cq)) {
+                rs.next();
+                int ng = rs.getInt("ngifts");
+                BigDecimal funds = rs.getBigDecimal("total");
+                System.out.format("database has %d gifts totalling %s%n", ng, funds);
+            }
+            db.commit();
+        } catch (SQLException | RuntimeException e) {
+            db.rollback();
+            throw e;
+        } finally {
+            db.setAutoCommit(true);
+        }
+    }
+
+    @Command
     public void echo(String... args) {
         for (int i = 0; i < args.length; i++) {
             if (i > 0) {
