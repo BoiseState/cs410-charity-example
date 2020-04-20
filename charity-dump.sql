@@ -16,6 +16,28 @@ SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
 
+ALTER TABLE ONLY public.gift_fund_allocation DROP CONSTRAINT gift_fund_allocation_gift_id_fkey1;
+ALTER TABLE ONLY public.gift_fund_allocation DROP CONSTRAINT gift_fund_allocation_gift_id_fkey;
+ALTER TABLE ONLY public.gift_fund_allocation DROP CONSTRAINT gift_fund_allocation_fund_id_fkey1;
+ALTER TABLE ONLY public.gift_fund_allocation DROP CONSTRAINT gift_fund_allocation_fund_id_fkey;
+ALTER TABLE ONLY public.gift DROP CONSTRAINT gift_donor_id_fkey;
+DROP INDEX public.gift_donor_idx;
+DROP INDEX public.gfa_gift_idx;
+DROP INDEX public.gfa_fund_idx;
+ALTER TABLE ONLY public.gift DROP CONSTRAINT gift_pkey;
+ALTER TABLE ONLY public.gift_fund_allocation DROP CONSTRAINT gift_fund_allocation_pkey;
+ALTER TABLE ONLY public.fund DROP CONSTRAINT fund_pkey;
+ALTER TABLE ONLY public.donor DROP CONSTRAINT donor_pkey;
+ALTER TABLE public.gift_fund_allocation ALTER COLUMN gf_alloc_id DROP DEFAULT;
+ALTER TABLE public.gift ALTER COLUMN gift_id DROP DEFAULT;
+ALTER TABLE public.donor ALTER COLUMN donor_id DROP DEFAULT;
+DROP SEQUENCE public.gift_gift_id_seq;
+DROP SEQUENCE public.gift_fund_allocation_gf_alloc_id_seq;
+DROP TABLE public.gift_fund_allocation;
+DROP TABLE public.gift;
+DROP TABLE public.fund;
+DROP SEQUENCE public.donor_donor_id_seq;
+DROP TABLE public.donor;
 SET default_tablespace = '';
 
 SET default_table_access_method = heap;
